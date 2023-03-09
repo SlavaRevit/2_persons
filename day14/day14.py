@@ -3,40 +3,50 @@ from data import data
 import click
 
 
+def get_random_account():
+    return random.choice(data)
 
-score = 0 
-player1 = random.choice(data)
-player2  = random.choice(data)
-print(f"Compare A: {player1['name']}, {player1['description']}, {player1['country']}")
-print(f"Compare B: {player2['name']}, {player2['description']}, {player2['country']}")
-guess = input("Who has more followers: 'A' or 'B'? ")
+def format_data(account):
+    name = account["name"]
+    description = account["description"]
+    country = account["country"]
+    return f"{name}, a {description}, from {country}"
+ 
+def check_answer(guess, folowers_player1, folowers_player2):
+    if folowers_player1 > folowers_player2:
+        return guess == "a"
+    else:
+        return guess == "b"
+    
+def game():
+    score = 0
+    game_should_continue = True
+    account_a = get_random_account()
+    account_b = get_random_account()
+    
+    while game_should_continue:
+        account_a = account_b
+        account_b = get_random_account()
 
-def compare(player1, player2):
-    global score
-    folowers_player1 = player1['follower_count']
-    folowers_player2 = player2['follower_count']
-    
-    print(folowers_player1, folowers_player2)
-    
-    if guess == "A":
-        if folowers_player1 > folowers_player2:
+        while account_a == account_b:
+            account_b = get_random_account()
+         
+        print(f"Compare A: {format_data(account_a)}.")
+        # print(vs)
+        print(f"Compare B: {format_data(account_b)}.")
+        
+        guess = input("Who has more folowers? Type 'A' or 'B': ").lower()
+        
+        a_folower_count = account_a['follower_count']
+        b_folower_count = account_b['follower_count']
+        is_correct = check_answer(guess, a_folower_count, b_folower_count)
+        click.clear()
+        print("Logo")
+        if is_correct:
             score += 1
-            click.clear()
+            print(f"You're right! Current score: {score}. ")
         else:
-            click.clear()
-            print(f"Sorry, that's wrong. Final score {score}")
-    elif guess == "B":
-        if folowers_player2 > folowers_player1:
-            score += 1
-            print(score)
+            game_should_continue = False
+            print(f"Sorry , that's wrong. Final score: {score}")
 
-compare(player1=player1, player2=player2)
-# def check_answer()
-
-
-# compare(player1=player1, player2=player2)
-# play_again = True
-# while play_again:
-
-
-
+game()
